@@ -7,7 +7,7 @@ import numpy as np
 from PIL import Image, ImageFont, ImageDraw
 
 
-FRAMERATE = 1
+FRAMERATE = 2
 
 # Get all .jpg files in the current folder.
 filenames = glob.glob('*.jpg')
