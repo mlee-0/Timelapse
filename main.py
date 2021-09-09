@@ -8,9 +8,9 @@ import numpy as np
 from PIL import Image, ImageFont, ImageDraw
 
 
-IMAGE_DURATION = 1/10  # Duration of a single image (seconds)
+IMAGE_DURATION = 1/30  # Duration of a single image (seconds)
 FRAMERATE = 30
-RESOLUTION = (768, 1024)
+RESOLUTION = (360, 480)
 
 # Get all .jpg files in the current folder.
 filenames = glob.glob('*.jpg')
@@ -19,20 +19,25 @@ filenames.sort(key=lambda string: int(string.split('.')[0].split('_')[-1]))
 
 # Load all image files and add text to each.
 frames = []
-for index in range(len(filenames)-1):
-    images = [Image.open(filenames[index]), Image.open(filenames[index+1])]
+for index, filename in enumerate(filenames):
+    try:
+        images = [Image.open(filename), Image.open(filenames[index+1])]
+    except IndexError:
+        images= [Image.open(filename), Image.open(filename)]
     for i, image in enumerate(images):
         if image.size != RESOLUTION:
             image = image.resize(RESOLUTION)
             images[i] = image
     
     # Create each frame by blending two consecutive images.
+    if index == len(filenames)-1:
+        IMAGE_DURATION *= 10
     for alpha in np.arange(0, 1, 1 / (IMAGE_DURATION * FRAMERATE)):
         image = Image.blend(images[0], images[1], alpha)
 
         # Draw text.
         font = ImageFont.truetype('arial.ttf', round(RESOLUTION[1]/10))
-        text = filenames[index].split('.')[0].split('_')[1]
+        text = filename.split('.')[0].split('_')[1]
         draw = ImageDraw.Draw(image)
         w, h = draw.textsize(text, font=font)
         position = ((RESOLUTION[0]-w)//2, RESOLUTION[1]//10-h//2)
@@ -42,4 +47,4 @@ for index in range(len(filenames)-1):
 image, *frames = frames
 
 # Write images to video.
-image.save('timelapse.gif', format='GIF', append_images=frames, save_all=True, duration=1000/FRAMERATE, loop=0)
+image.save(f'timelapse_{len(filenames)-1}.gif', format='GIF', append_images=frames, save_all=True, duration=1000/FRAMERATE, loop=0)
