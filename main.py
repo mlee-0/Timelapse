@@ -10,7 +10,7 @@ from PIL import Image, ImageFont, ImageDraw
 
 IMAGE_DURATION = 1/30  # Duration of a single image (seconds)
 FRAMERATE = 30
-RESOLUTION = (360, 480)
+RESOLUTION = (330, 440)
 
 # Get all .jpg files in the current folder.
 filenames = glob.glob('*.jpg')
@@ -36,12 +36,13 @@ for index, filename in enumerate(filenames):
         image = Image.blend(images[0], images[1], alpha)
 
         # Draw text.
-        font = ImageFont.truetype('arial.ttf', round(RESOLUTION[1]/10))
-        text = filename.split('.')[0].split('_')[1]
-        draw = ImageDraw.Draw(image)
-        w, h = draw.textsize(text, font=font)
-        position = ((RESOLUTION[0]-w)//2, RESOLUTION[1]//10-h//2)
-        draw.text(position, text, fill=(255,255,255), font=font, stroke_width=round(RESOLUTION[1]/200), stroke_fill=(0,0,0))
+        if index < len(filenames) - 1:
+            font = ImageFont.truetype('arial.ttf', round(RESOLUTION[1]/10))
+            text = filename.split('.')[0].split('_')[1]
+            draw = ImageDraw.Draw(image)
+            w, h = draw.textsize(text, font=font)
+            position = ((RESOLUTION[0]-w)//2, RESOLUTION[1]//10-h//2)
+            draw.text(position, text, fill=(255,255,255), font=font, stroke_width=round(RESOLUTION[1]/200), stroke_fill=(0,0,0))
 
         frames.append(image)
 image, *frames = frames
